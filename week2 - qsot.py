@@ -1,4 +1,5 @@
 import sys
+import threading
 
 
 def swap(a, i, j):
@@ -8,20 +9,22 @@ def swap(a, i, j):
 import random
 
 temp = 0
-def qsort(a, low=None, high=None):
+
+
+def badqsort(a, low=None, high=None):
     global temp
-    if high == None:
+    if high is None:
         high = len(a) - 1
-    if low == None:
+    if low is None:
         low = 0
     if low < high:
-        b = a[low:high+1]
+        b = a[low:high + 1]
         i = b.index(min(b))
         swap(a, low, i + low)
         m = low
         for j in range(low + 1, high + 1):
             if a[j] < a[low]:
-                temp+=1
+                temp += 1
                 m += 1
                 swap(a, m, j)
                 # low < i <= m : a[i] < a[low]
@@ -30,6 +33,29 @@ def qsort(a, low=None, high=None):
         # low <= i < m : a[i] < a[m]
         # i > m              : a[i] >= a[m]
         if m > 0:
+            temp += 1
+            badqsort(a, low, m - 1)
+        badqsort(a, m + 1, high)
+
+
+def qsort(a, low=0, high=-1):
+    global temp
+    if high == -1:
+        high = len(a) - 1
+    if low < high:
+        swap(a, low, random.randint(low, high))
+        m = low
+        for j in range(low + 1, high + 1):
+            if a[j] < a[low]:
+                m += 1
+                swap(a, m, j)
+                # low < i <= m : a[i] < a[low]
+                # i > m        : a[i] >= a[low]
+        swap(a, low, m)
+        # low <= i < m : a[i] < a[m]
+        # i > m              : a[i] >= a[m]
+        if m > 0:
+            temp += 1
             qsort(a, low, m - 1)
         qsort(a, m + 1, high)
 
@@ -43,38 +69,52 @@ def isSorted(a):
 
 
 if __name__ == '__main__':
-    sys.setrecursionlimit(1000000)
-    ia = [45, 65, 34, 82, 30, 22]
-    print(ia)
-    qsort(ia)
-    print(ia)
-
-    dd = [45.0, 65.0, 34.0, 82.0, 30.0, 22.0]
-    print(dd)
-    qsort(dd)
-    print(dd)
-
+    sys.setrecursionlimit(10000000)
     #    import random
+    a = [0] * 2000
+    for i in range(2000):
+        a[i] = random.randint(0, 2000)
 
-    a = [0] * 1000
-    for i in range(1000):
-        a[i] = random.randint(0, 10000)
+    gud = list(a)
+    bad = list(a)
+    print("Gud qsort")
     print("a gegenereerd")
-    print(a[500:510])
-    b = list(a)
+    print(gud[500:510])
+    b = list(gud)
 
     import timeit
 
     timer = timeit.default_timer
 
     t1 = timer()
-    qsort(a)
-    print(a[500:510])
+    qsort(gud)
+    print(gud[500:510])
     t2 = timer()
     print(t2 - t1)
-    print(isSorted(a))
+    print(isSorted(gud))
 
     b.sort()
-    print(a == b)
+    print(gud == b)
+
+    print(temp)
+
+    temp = 0
+    print("Bad qsort")
+    print(bad[500:510])
+    b = list(bad)
+
+    import timeit
+
+    timer = timeit.default_timer
+
+    t1 = timer()
+    badqsort(bad)
+    print(bad[500:510])
+    t2 = timer()
+    print(t2 - t1)
+    print(isSorted(bad))
+
+    b.sort()
+    print(bad == b)
 
     print(temp)
