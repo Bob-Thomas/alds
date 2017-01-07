@@ -1,5 +1,8 @@
+from queue import Queue
+
+
 class BSTNode:
-    def __init__(self, element, left, right):
+    def __init__(self, element, left=None, right=None):
         self.element = element
         self.left = left
         self.right = right
@@ -127,7 +130,7 @@ class BSTNode:
         if parent.element < e:
             current = parent.right
         elif parent.element > e:
-            current = parent.left;
+            current = parent.left
         else:
             return None
 
@@ -154,7 +157,7 @@ class BSTNode:
         return parent
 
     def delete(self, e):
-        parent = self.getParent(e);
+        parent = self.getParent(e)
 
         if parent == None:
             return False
@@ -202,6 +205,23 @@ class BST:
         else:
             return 'null-tree'
 
+    def showLevelOrder(self):
+        if not self.root:
+            return 'null-tree'
+
+        level = 0
+        currentLevel = [self.root]
+        while currentLevel:
+            level+=1
+            print('LEVEL - ', level)
+            next = list()
+            for n in currentLevel:
+                print(n.element)
+                if n.left: next.append(n.left)
+                if n.right: next.append(n.right)
+            print
+            currentLevel = next
+
     def search(self, e):
         if self.root and e:
             return self.root.search(e)
@@ -239,7 +259,7 @@ class BST:
                     self.root.element = self.root.right.element
                     self.root.right = self.root.right.right
                 else:
-                    node = self.root.parentMinRightTree();
+                    node = self.root.parentMinRightTree()
                     self.root.element = node.left.element
                     node.left = node.left.right
                 return True
@@ -256,8 +276,78 @@ class BST:
 
 
 if __name__ == '__main__':
-    b = BST([4, 1, 2, 5, 3, 10, 100])
-    k = b.max()
-    s = b.rsearch(3)
-    print(str(k.element))
-    print(str(s.element if s else None))
+    b = BST([1, 2, 3])
+    print(b)
+    b.showLevelOrder()
+
+    print('----------------')
+    b = BST([1, 2, 3, 4])
+    print(b)
+    b.showLevelOrder()
+
+    print('----------------')
+    b = BST([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    print(b)
+    b.showLevelOrder()
+
+    print('----------------')
+
+    b = BST([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+    print(b)
+    b.showLevelOrder()
+
+    node = b.rsearch(3)
+    assert(node != None)
+    node = b.rsearch(4)
+    assert(node != None)
+    node = b.rsearch(8)
+    assert(node != None)
+    node = b.rsearch(11)
+    assert(node != None)
+    node = b.rsearch(16)
+    assert(node == None)
+
+    b.insert(17)
+    print(b)
+
+    print('----------------')
+    b.delete(14)
+    print(b)
+    print('----------------')
+
+    print(b.insert(10))
+
+    b = BST()
+    for i in range(1, 11):
+        b.insert(i)
+    print(b)
+
+    print('----------------')
+
+    b = BST(None)
+    print(b)
+    print('----------------')
+    b = BST([])
+    print(b)
+    print('----------------')
+    b = BST([0])
+    print(b)
+    print('----------------')
+
+    b = BST()
+    b.rinsert(3)
+    b.rinsert(2)
+    b.rinsert(10)
+    b.rinsert(11)
+    b.rinsert(9)
+    b.rinsert(6)
+    b.rinsert(7)
+    b.rinsert(8)
+    print("Recursief toevoegen is hier: ")
+    print(b)
+
+    print('----------------')
+    b.delete(3)
+    print(b)
+
+    print('----------------')
