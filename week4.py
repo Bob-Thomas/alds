@@ -85,6 +85,7 @@ class Table:
 
 
 import random
+
 sys.setrecursionlimit(100000000)
 t = Table(1)
 
@@ -101,21 +102,43 @@ for i in t.table:
     if i is not None:
         print(i)
 
+import random
+
+hashdict = dict()
+while (True):
+    r = random.random()
+    if r not in hashdict.values():
+        hr = hash(r) % (2 ** 32)
+        if hr in hashdict.keys():
+            print(repr(r) + ", " + repr(hashdict[hr]) + ": " + repr(hr))
+            break
+        hashdict[hr] = r
+
+def B(n, k):
+    C = [0 for i in range(k + 1)]
+    C[0] = 1  # since nC0 is 1
+
+    for i in range(1, n + 1):
+        j = min(i, k)
+        while j > 0:
+            C[j] = C[j] + C[j - 1]
+            j -= 1
+
+    return C[k]
 
 
-d = {}
-for i in range(10000):
-    k = random.randint(0,1)
-    d[hash(random.uniform(0, 1))] = k
+print((B(100, 50)))
 
-magic = []
-for k, v in d.items():
-    magic.append(v)
 
-dupes = set([x for x in magic if magic.count(x) > 1])
+def f(n):
+    assert type(n) == int
+    assert n <= 1000
+    coins = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
+    ways = [1] + ([0] * n)
+    for coin in coins:
+        for i in range(coin, n + 1):
+            ways[i] += ways[i - coin]
+    return ways[n]
 
-for i in dupes:
-    print(repr(i))
-print(len(dupes))
-
+print(f(100))
 
