@@ -55,21 +55,24 @@ def clear(G):
 
 def BFS(G, s):
     V = vertices(G)
-    s.predecessor = None
-    s.distance = 0
+    s.predecessor = None  # s krijgt het attribuut 'predecessor'
+    s.distance = 0  # s krijgt het attribuut 'distance'
     for v in V:
         if v != s:
             v.distance = INFINITY  # v krijgt het attribuut 'distance'
+    no_cycle = True
     q = myqueue()
-    q.enqueue(s)
-    #    print("q:", q)
+    q.enqueue(s)  # plaats de startnode in de queue
     while q:
         u = q.dequeue()
         for v in G[u]:
             if v.distance == INFINITY:  # v is nog niet bezocht
                 v.distance = u.distance + 1
                 v.predecessor = u  # v krijgt het attribuut 'predecessor'
-                q.enqueue(v)
+                q.enqueue(v)  # plaats de buren van v in de queue
+            elif u.predecessor != v:
+                no_cycle = False
+    return no_cycle
 
 
 # print("q:", q)
@@ -123,19 +126,16 @@ def path_BFS(G, u, v):
 
 
 def is_connected(G):
-    V = vertices(G)
-    BFS(G, V[0])
-    for v in V:
-        if v.distance == INFINITY:
+    BFS(G,  list(G.keys())[0])
+    for s in G:
+        if s.distance == INFINITY:
             return False
     return True
 
 
 def no_cycles(G):
-    V = vertices(G)
-    BFS(G, V[1])
-    for v in V:
-        print(v, (v.predecessor if hasattr(v, 'predecessor') else 'NONE'), v.distance)
+    return BFS(G, list(G.keys())[0])
+
 
 # diconnected graph - http://i.imgur.com/lSFqJkT.png
 v = [Vertex(i) for i in range(8)]
@@ -153,7 +153,7 @@ G = {
 print("disconnected graaf", is_connected(G))
 
 # connnected graph with cycles - http://i.imgur.com/rMNJ1UM.png
-v = [Vertex(i) for i in range(7)]
+v = [Vertex(i) for i in range(8)]
 G = {
     v[0]: [v[4], v[5]],
     v[1]: [v[4], v[5], v[6]],
@@ -164,6 +164,7 @@ G = {
 }
 print("Graaf is connected", is_connected(G))
 print("graaf heeft wel cycles:", no_cycles(G))
+clear(G)
 
 # disconnnected graph without cycles - http://i.imgur.com/BuiHpLU.png
 
@@ -180,5 +181,7 @@ G = {
 }
 
 print("graaf heeft geen cycles:", no_cycles(G))
+
+
 
 clear(G)
