@@ -1,108 +1,90 @@
 import sys
 
 
-class Entry:
-    def __init__(self, k, v):
-        self.key = k
-        self.value = v
-        self.next = None
-
-    def __repr__(self):
-        return "Key: " + str(self.key) + "\n Value: " + str(self.value) + (
-            "\t" + self.next.__repr__() if self.next is not None else "")
-
-
-class Table:
-    def __init__(self, length):
+class Hash:
+    def __init__(self):
+        self.len = 1
+        self.table = [set()]
         self.used = 0
-        self.len = length
-        self.table = [None] * length
 
     def __repr__(self):
+        message = ""
+        count = 0
         for i in self.table:
-            print(i)
+            message += str(count) + ":"
+            count += 1
+            message += str(i) + "\n"
+        return message
+
+    def search(self, e):
+        if e:
+            for i in self.table:
+                if e in i:
+                    return True
+        return False
 
     def insert(self, e):
-        hash = (e.key % self.len)
-        if self.table[hash] is None:
-            self.table[hash] = e
-            self.used += 1
+        if e:
+            key = int(e % self.len)
             if self.used > 0.75 * self.len:
                 self.rehash(self.len * 2)
-        else:
-            entry = self.table[hash]
-            while entry.next is not None and entry.key != e.key:
-                entry = entry.next
-            if entry.key == e.key:
-                entry.value = e.value
-            else:
-                entry.next = e
+            self.table[key].add(e)
+            self.used += 1
 
-    def search(self, key):
-        hash = (key % self.len)
-        if self.table[hash] is not None:
-            entry = self.table[hash]
-            while entry is not None and entry.key != key:
-                entry = entry.next
-            if entry is None:
-                return -1
-            else:
-                return entry
-        else:
-            return -1
-
-    def delete(self, key):
-        hash = (key % self.len)
-        if self.table[hash] is None:
-            return -1
-        else:
-            entry = self.table[hash]
-            prev = None
-            while entry.next is not None and entry.key != key:
-                prev = entry
-                entry = entry.next
-            if entry.key == key:
-                if prev is None:
-                    self.table[hash] = entry.next
-                else:
-                    prev.next = entry.next
+    def delete(self, e):
+        if e:
+            for i in self.table:
+                if e in i:
+                    i.remove(e)
+                    self.used -= 1
+                    return True
+        return False
 
     def rehash(self, new_len):
-        print("REHASHING NEW LENGTH ", new_len)
-        if new_len > self.len:
-            oldlen = self.len
-            oldTable = self.table
-            self.table = [None] * new_len
-            self.used = 0
-            self.len = new_len
+        print("Rehashing")
+        print(self)
+        oldTable = self.table
 
-            for i in range(oldlen):
-                if oldTable[i] is not None:
-                    self.insert(oldTable[i])
-            for i in self.table:
-                if i is not None:
-                    print(i)
+        self.table = []
+        self.len = new_len
+        for i in range(new_len):
+            self.table.append(set())
+        for i in oldTable:
+            for s in i:
+                self.table[int(s % self.len)].add(s)
 
 
 import random
 
 sys.setrecursionlimit(100000000)
-t = Table(1)
-
-print("INSERTING")
-
+t = Hash()
+print("*"*10, "CHAIN HASH", "*"*10)
+print("*"*10, "INSERTING", "*"*10)
+temp = []
 for i in range(200):
-    t.insert(Entry(i, random.uniform(0, 1000)))
+    temp.append(random.uniform(0, 1000))
+    t.insert(temp[i])
+print("*"*10, "DONE INSERTING", "*"*10)
+ready_to_delete = []
+while len(ready_to_delete) <= 100:
+    element = random.choice(temp)
+    ready_to_delete.append(element)
+    temp.remove(element)
 
-for i in range(100):
+print("*"*10, "READY TO DELETE", "*"*10)
+for i in ready_to_delete:
+    print(i, "FOUND ", t.search(i))
+
+print("DELETING")
+for i in ready_to_delete:
     t.delete(i)
 
-print("DELETED")
-for i in t.table:
-    if i is not None:
-        print(i)
+for i in ready_to_delete:
+    print(i, "FOUND ", t.search(i))
 
-import random
+print("*"*10, "DONE DELETING", "*"*10)
+print(t)
+print("*"*10, "END CHAIN HASH", "*"*10)
 
 hashdict = dict()
 while (True):
@@ -113,6 +95,7 @@ while (True):
             print(repr(r) + ", " + repr(hashdict[hr]) + ": " + repr(hr))
             break
         hashdict[hr] = r
+
 
 def B(n, k):
     C = [0 for i in range(k + 1)]
@@ -140,5 +123,5 @@ def f(n):
             ways[i] += ways[i - coin]
     return ways[n]
 
-print(f(100))
 
+print(f(100))
