@@ -58,20 +58,20 @@ import random
 
 sys.setrecursionlimit(100000000)
 t = Hash()
-print("*"*10, "CHAIN HASH", "*"*10)
-print("*"*10, "INSERTING", "*"*10)
+print("*" * 10, "CHAIN HASH", "*" * 10)
+print("*" * 10, "INSERTING", "*" * 10)
 temp = []
 for i in range(200):
     temp.append(random.uniform(0, 1000))
     t.insert(temp[i])
-print("*"*10, "DONE INSERTING", "*"*10)
+print("*" * 10, "DONE INSERTING", "*" * 10)
 ready_to_delete = []
 while len(ready_to_delete) <= 100:
     element = random.choice(temp)
     ready_to_delete.append(element)
     temp.remove(element)
 
-print("*"*10, "READY TO DELETE", "*"*10)
+print("*" * 10, "READY TO DELETE", "*" * 10)
 for i in ready_to_delete:
     print(i, "FOUND ", t.search(i))
 
@@ -82,9 +82,9 @@ for i in ready_to_delete:
 for i in ready_to_delete:
     print(i, "FOUND ", t.search(i))
 
-print("*"*10, "DONE DELETING", "*"*10)
+print("*" * 10, "DONE DELETING", "*" * 10)
 print(t)
-print("*"*10, "END CHAIN HASH", "*"*10)
+print("*" * 10, "END CHAIN HASH", "*" * 10)
 
 hashdict = dict()
 while (True):
@@ -105,23 +105,35 @@ def B(n, k):
         j = min(i, k)
         while j > 0:
             C[j] = C[j] + C[j - 1]
+            print(C[j], end=' ')
             j -= 1
-
+        print()
     return C[k]
 
 
-print((B(100, 50)))
+print((B(50, 100)))  # 184756
 
+
+# https://en.wikipedia.org/wiki/Change-making_problem
 
 def f(n):
     assert type(n) == int
     assert n <= 1000
-    coins = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
-    ways = [1] + ([0] * n)
-    for coin in coins:
-        for i in range(coin, n + 1):
-            ways[i] += ways[i - coin]
-    return ways[n]
+    actual_amount = 0
+    coins = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000]
+    minCoins = [[0 for _ in range(n + 1)] for _ in range(len(coins) + 1)]
+    for i in range(n + 1):
+        minCoins[0][i] = i
+    for c in range(1, len(coins) + 1):
+        for r in range(1, n + 1):
+            if coins[c - 1] == r:
+                minCoins[c][r] = 1
+            elif coins[c - 1] > r:
+                minCoins[c][r] = minCoins[c - 1][r]
+            else:
+                minCoins[c][r] = min(minCoins[c - 1][r], 1 + minCoins[c][r - coins[c - 1]])
+
+    return minCoins[-1][-1]
 
 
-print(f(100))
+print(f(25))
