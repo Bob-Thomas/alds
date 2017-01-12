@@ -24,14 +24,9 @@ def badqsort(a, low=None, high=None):
         m = low
         for j in range(low + 1, high + 1):
             if a[j] < a[low]:
-                temp += 1
                 m += 1
                 swap(a, m, j)
-                # low < i <= m : a[i] < a[low]
-                # i > m        : a[i] >= a[low]
         swap(a, low, m)
-        # low <= i < m : a[i] < a[m]
-        # i > m              : a[i] >= a[m]
         if m > 0:
             temp += 1
             badqsort(a, low, m - 1)
@@ -49,11 +44,7 @@ def qsort(a, low=0, high=-1):
             if a[j] < a[low]:
                 m += 1
                 swap(a, m, j)
-                # low < i <= m : a[i] < a[low]
-                # i > m        : a[i] >= a[low]
         swap(a, low, m)
-        # low <= i < m : a[i] < a[m]
-        # i > m              : a[i] >= a[m]
         if m > 0:
             temp += 1
             qsort(a, low, m - 1)
